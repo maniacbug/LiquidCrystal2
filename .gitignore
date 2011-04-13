@@ -1,2 +1,5 @@
 .cvsignore
+*.o
+*.orig
+.*.swp
 CVS/

@@ -1,5 +1,5 @@
-#ifndef LiquidCrystal2_h
-#define LiquidCrystal2_h
+#ifndef __LIQUIDCRYSTAL2_H__
+#define __LIQUIDCRYSTAL2_H__
 
 #include <inttypes.h>
 #include "Print.h"
@@ -54,32 +54,36 @@
 class ILcdHardware
 {
 public:
-	/**
-	 * Set the mode of the writes to follow
-	 *
-	 * @param mode Whether the following writes are commands (LOW) or data (HIGH)
-	 */
-	virtual void setMode(uint8_t mode) = 0;
+    /**
+     * Set the mode of the writes to follow
+     *
+     * @param mode Whether the following writes are commands (LOW) or data (HIGH)
+     */
+    virtual void setMode(uint8_t mode) = 0;
 
-	/**
-	 * Write 4 bits to the hardware
-	 */
-	virtual void write4bits(uint8_t) = 0;
+    /**
+     * Write 4 bits to the hardware
+     *
+     * @param data d0-d3 are the 4 bits to be written
+     */
+    virtual void write4bits(uint8_t data) = 0;
 
-	/**
-	 * Write 8 bits to the hardware
-	 *
-	 * In 4-bit mode, this function will handle splittling the nibbles
-	 * correctly.
-	 */
-	virtual void write8bits(uint8_t) = 0;
+    /**
+     * Write 8 bits to the hardware
+     *
+     * In 4-bit mode, this function will handle splittling the nibbles
+     * correctly.
+     *
+     * @param data the byte to be written
+     */
+    virtual void write8bits(uint8_t data) = 0;
 
-	/**
-	 * Test whether the hardware is wired for 4-bit transmission
-	 *
-	 * @return True if the hardware is in 4-bit, false in 8-bit
-	 */
-	virtual int fourbitmode() = 0;
+    /**
+     * Test whether the hardware is wired for 4-bit transmission
+     *
+     * @return True if the hardware is in 4-bit, false in 8-bit
+     */
+    virtual int fourbitmode() = 0;
 };
 
 /**
@@ -87,119 +91,142 @@ public:
  *
  * This code is all pulled out of the original LiquidCrystal class
  * supplied with Arduino.
+ *
+ * @todo LcdDirect needs an example.  Should just use examples from
+ * the stock LiquidCrystal library!
  */
 
 class LcdDirect: public ILcdHardware
 {
 public:
-	LcdDirect(uint8_t rs, uint8_t enable,
-				   uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-				   uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-	LcdDirect(uint8_t rs, uint8_t rw, uint8_t enable,
-				   uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-				   uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-	LcdDirect(uint8_t rs, uint8_t rw, uint8_t enable,
-				   uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
-	LcdDirect(uint8_t rs, uint8_t enable,
-				   uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+    LcdDirect(uint8_t rs, uint8_t enable,
+              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+              uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
+    LcdDirect(uint8_t rs, uint8_t rw, uint8_t enable,
+              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+              uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
+    LcdDirect(uint8_t rs, uint8_t rw, uint8_t enable,
+              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+    LcdDirect(uint8_t rs, uint8_t enable,
+              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
 
-	void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
-			  uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-			  uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
+    void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
+              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+              uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
 
-	virtual void setMode(uint8_t);
-	virtual void write4bits(uint8_t);
-	virtual void write8bits(uint8_t);
-	virtual int fourbitmode() { return _fourbitmode; }
+    virtual void setMode(uint8_t);
+    virtual void write4bits(uint8_t);
+    virtual void write8bits(uint8_t);
+    virtual int fourbitmode()
+    {
+        return _fourbitmode;
+    }
 private:
-	void pulseEnable();
+    void pulseEnable();
 
-	/**
-	 * Pin used for Register Select (RS)
-	 *
-	 * LOW = command mode, HIGH = data mode
-	 */
-	uint8_t _rs_pin;
+    /**
+     * Pin used for Register Select (RS)
+     *
+     * LOW = command mode, HIGH = data mode
+     */
+    uint8_t _rs_pin;
 
-	/**
-	 * Pin used for Read/Write (RW)
-	 *
-	 * Set this to 255 if the pin is hard-wired
-	 * to GND, which means we're permanantly in write mode.  LOW = write, HIGH =
-	 * read.
-	 */
-	uint8_t _rw_pin;
+    /**
+     * Pin used for Read/Write (RW)
+     *
+     * Set this to 255 if the pin is hard-wired
+     * to GND, which means we're permanantly in write mode.  LOW = write, HIGH =
+     * read.
+     */
+    uint8_t _rw_pin;
 
-	/**
-	 * Pin used for Enable
-	 *
-	 * When this pin goes HIGH, the data and RS pins are read and acted upon.
-	 */
-	uint8_t _enable_pin; // activated by a HIGH pulse.
+    /**
+     * Pin used for Enable
+     *
+     * When this pin goes HIGH, the data and RS pins are read and acted upon.
+     */
+    uint8_t _enable_pin; // activated by a HIGH pulse.
 
-	/**
-	 * Pins used for Data
-	 *
-	 * In four bit mode, only set _data_pins[0-3].  _data_pin[0] is the LSB of
-	 * the data.  That's DB0 in 8-bit and DB4 in 4-bit.
-	 */
-	uint8_t _data_pins[8];
+    /**
+     * Pins used for Data
+     *
+     * In four bit mode, only set _data_pins[0-3].  _data_pin[0] is the LSB of
+     * the data.  That's DB0 in 8-bit and DB4 in 4-bit.
+     */
+    uint8_t _data_pins[8];
 
-	/**
-	 * Whether the hardware is wired for 4 bits
-	 *
-	 * HIGH = 4-bit, LOW = 8-bit.
-	 */
-	int _fourbitmode;
+    /**
+     * Whether the hardware is wired for 4 bits
+     *
+     * HIGH = 4-bit, LOW = 8-bit.
+     */
+    int _fourbitmode;
 };
 
-class LiquidCrystal2 : public Print {
+class LiquidCrystal2 : public Print
+{
 public:
-	/**
-	 * Constructor
-	 *
-	 * @warning: This does not automatically 'begin' the LCD.  You still
-  	 * have to do that when you're ready, in case your LcdHardware needs
-  	 * to have an explicit begin() first.
-  	 */
-  LiquidCrystal2(ILcdHardware*);
+    /**
+     * Constructor
+     *
+     * @warning: This does not automatically 'begin' the LCD.  You still
+     * have to do that when you're ready, in case your LcdHardware needs
+     * to have an explicit begin() first.
+     */
+    LiquidCrystal2(ILcdHardware*);
 
-  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
+    void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
 
-  void clear();
-  void home();
+    void clear();
+    void home();
 
-  void noDisplay();
-  void display();
-  void noBlink();
-  void blink();
-  void noCursor();
-  void cursor();
-  void scrollDisplayLeft();
-  void scrollDisplayRight();
-  void leftToRight();
-  void rightToLeft();
-  void autoscroll();
-  void noAutoscroll();
+    void noDisplay();
+    void display();
+    void noBlink();
+    void blink();
+    void noCursor();
+    void cursor();
+    void scrollDisplayLeft();
+    void scrollDisplayRight();
+    void leftToRight();
+    void rightToLeft();
+    void autoscroll();
+    void noAutoscroll();
 
-  void createChar(uint8_t, uint8_t[]);
-  void setCursor(uint8_t, uint8_t);
-  virtual void write(uint8_t);
-  void command(uint8_t);
+    void createChar(uint8_t, uint8_t[]);
+    void setCursor(uint8_t, uint8_t);
+    virtual void write(uint8_t);
+    void command(uint8_t);
 protected:
 
 
 private:
-  void send(uint8_t, uint8_t);
+    void send(uint8_t, uint8_t);
 
-  uint8_t _displayfunction;
-  uint8_t _displaycontrol;
-  uint8_t _displaymode;
+    uint8_t _displayfunction;
+    uint8_t _displaycontrol;
+    uint8_t _displaymode;
 
-  uint8_t _initialized;
-  uint8_t _numlines,_currline;
+    uint8_t _initialized;
+    uint8_t _numlines,_currline;
 
-	ILcdHardware* _driver;
+    ILcdHardware* _driver;
 };
 
-#endif
+/**
+ * @mainpage Refactored LiquidCrystal library
+ *
+ * The LiquidCrystal2 class is exactly the code taken from the stock Arduino
+ * LiquidCrystal library and split into two.  The dividing line is between
+ * the direct interface to the hardware and the logical command set.  The
+ * line is defined by the ILcdHardware interface.  Code from the original
+ * which is BELOW that line is now in the LcdDirect class.  Code which was
+ * ABOVE it is now in the LiquidCrystal2 class.
+ *
+ * This allows other methods of directly interfacing the hardware, such as
+ * an I/O expander.
+ */
+
+#endif // __LIQUIDCRYSTAL2_H__ 
+
+// vim:ai:cin:sts=4 sw=4 ft=cpp
