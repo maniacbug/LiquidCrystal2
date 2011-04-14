@@ -163,6 +163,14 @@ private:
     int _fourbitmode;
 };
 
+/**
+ * High-level logical interface to driving an LCD
+ *
+ * This is a refactor of the stock Arduino LiquidCrystal library.  See the
+ * documentation for it at 
+ * <a href="http://arduino.cc/en/Reference/LiquidCrystal">http://arduino.cc/en/Reference/LiquidCrystal</a>
+ */
+
 class LiquidCrystal2 : public Print
 {
 public:
@@ -212,6 +220,15 @@ private:
 
     ILcdHardware* _driver;
 };
+
+/**
+ * @example HelloWorld.pde
+ *
+ * Demonstrates the use a 16x2 LCD display.  The LiquidCrystal2
+ * library works with all LCD displays that are compatible with the 
+ * Hitachi HD44780 driver.  This example shows how to use the
+ * LcdDirect hardware interface.
+ */
 
 /**
  * @mainpage Refactored LiquidCrystal library
